@@ -146,6 +146,6 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.2'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
 
-
-
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.2.2'
+    runtimeOnly 'org.postgresql:postgresql:42.7.3'
 }
