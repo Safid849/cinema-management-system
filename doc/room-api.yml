@@ -1,0 +1,135 @@
+paths:
+  /rooms:
+    get:
+      tags: [Rooms]
+      operationId: listRooms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+    put:
+      tags: [Rooms]
+      operationId: upsertRoom
+      description: 403 for CLIENT and EMPLOYEE, 200 for MANAGER.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomInput'
+      responses:
+        '200':
+          description: Room created/updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /rooms/{id}:
+    get:
+      tags: [Rooms]
+      operationId: getRoomById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /rooms/{roomId}/seats:
+    get:
+      tags: [Seats]
+      operationId: listSeatsByRoom
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seat'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+components:
+  schemas:
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        capacity:
+          type: integer
+
+    RoomInput:
+      type: object
+      required: [number, capacity]
+      properties:
+        number:
+          type: string
+        capacity:
+          type: integer
+
+    Seat:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        roomId:
+          type: string
+          format: uuid
