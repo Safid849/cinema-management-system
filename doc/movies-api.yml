@@ -1,0 +1,107 @@
+paths:
+  /movies:
+    get:
+      tags: [Movies]
+      operationId: listMovies
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+    put:
+      tags: [Movies]
+      operationId: upsertMovie
+      description: 403 for CLIENT and EMPLOYEE, 200 for MANAGER.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieInput'
+      responses:
+        '200':
+          description: Movie created/updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /movies/{id}:
+    get:
+      tags: [Movies]
+      operationId: getMovieById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+components:
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        genre:
+          type: array
+          items:
+            $ref: './openapi.yml#/components/schemas/Genre'
+        description:
+          type: string
+        duration:
+          type: string
+          description: ISO-8601 duration (e.g. PT2H10M)
+
+    MovieInput:
+      type: object
+      required: [title, genre, duration]
+      properties:
+        title:
+          type: string
+        genre:
+          type: array
+          items:
+            $ref: './openapi.yml#/components/schemas/Genre'
+        description:
+          type: string
+        duration:
+          type: string

@@ -1,0 +1,121 @@
+paths:
+  /reservations:
+    get:
+      tags: [Reservations]
+      operationId: listReservations
+      description: 403 for CLIENT, 200 for MANAGER and EMPLOYEE.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+    put:
+      tags: [Reservations]
+      operationId: upsertReservation
+      description: 403 for CLIENT, 200 for EMPLOYEE and MANAGER.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationInput'
+      responses:
+        '200':
+          description: Reservation created/updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /reservations/{id}:
+    get:
+      tags: [Reservations]
+      operationId: getReservationById
+      description: >
+        200 if the CLIENT owns the reservation,
+        403 if it is another CLIENT's reservation,
+        200 for MANAGER and EMPLOYEE regardless of the owner.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+components:
+  schemas:
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        projectionId:
+          type: string
+          format: uuid
+        seatIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    ReservationInput:
+      type: object
+      required: [projectionId, seatIds]
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: Optional — inferred from the token if the caller is a CLIENT.
+        projectionId:
+          type: string
+          format: uuid
+        seatIds:
+          type: array
+          items:
+            type: string
+            format: uuid

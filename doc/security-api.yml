@@ -1,0 +1,192 @@
+paths:
+  /ping:
+    get:
+      tags: [Health]
+      operationId: ping
+      security: []
+      responses:
+        '200':
+          description: pong
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /beta-ping:
+    get:
+      tags: [Health]
+      operationId: betaPing
+      responses:
+        '200':
+          description: beta-pong
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: beta-pong
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /users/register:
+    post:
+      tags: [Users]
+      operationId: registerUser
+      security: []
+      description: Creates an account with the CLIENT role by default.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: './openapi.yml#/components/responses/400'
+        '409':
+          description: Email already in use
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /users/login:
+    post:
+      tags: [Users]
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /users:
+    get:
+      tags: [Users]
+      operationId: listUsers
+      description: MANAGER and EMPLOYEE only.
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      operationId: getUserById
+      description: A CLIENT may only view their own profile.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          $ref: './openapi.yml#/components/schemas/UserRole'
+
+    UserCreate:
+      type: object
+      required: [firstName, lastName, email, password]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string

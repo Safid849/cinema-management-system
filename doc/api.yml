@@ -1,0 +1,54 @@
+openapi: 3.1.0
+info:
+  title: Cinema Management API
+  description: >
+    Shared contract for the movie theater management project.
+    Infrastructure & Identity Module (Valisoa): User, Room, Seat.
+    Catalog & Reservation Module (Zinedis): Movie, Screening, Reservation.
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080'
+
+security:
+  - bearerAuth: []
+
+paths:
+  /ping:
+    $ref: './security-api.yml#/paths/~1ping'
+  /beta-ping:
+    $ref: './security-api.yml#/paths/~1beta-ping'
+  /users/register:
+    $ref: './security-api.yml#/paths/~1users~1register'
+  /users/login:
+    $ref: './security-api.yml#/paths/~1users~1login'
+  /users:
+    $ref: './security-api.yml#/paths/~1users'
+  /users/{id}:
+    $ref: './security-api.yml#/paths/~1users~1{id}'
+
+  /rooms:
+    $ref: './room-api.yml#/paths/~1rooms'
+  /rooms/{id}:
+    $ref: './room-api.yml#/paths/~1rooms~1{id}'
+  /rooms/{roomId}/seats:
+    $ref: './room-api.yml#/paths/~1rooms~1{roomId}~1seats'
+
+  /movies:
+    $ref: './movies-api.yml#/paths/~1movies'
+  /movies/{id}:
+    $ref: './movies-api.yml#/paths/~1movies~1{id}'
+
+  /projections:
+    $ref: './projections-api.yml#/paths/~1projections'
+  /projections/{id}:
+    $ref: './projections-api.yml#/paths/~1projections~1{id}'
+
+  /reservations:
+    $ref: './reservations-api.yml#/paths/~1reservations'
+  /reservations/{id}:
+    $ref: './reservations-api.yml#/paths/~1reservations~1{id}'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: './openapi.yml#/components/securitySchemes/bearerAuth'
