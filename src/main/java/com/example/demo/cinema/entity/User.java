@@ -17,7 +17,10 @@ public class User {
   @Id @GeneratedValue private UUID id;
 
   @Column(nullable = false)
-  private String firstname;
+  private String firstName;
+
+  @Column(nullable = false)
+  private String lastName;
 
   private LocalDate birthdate;
 
