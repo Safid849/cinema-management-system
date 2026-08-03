@@ -6,14 +6,14 @@ import java.sql.SQLException;
 
 public class DatabaseConfig {
 
-  private static final String URL = System.getenv("DB_URL");
-  private static final String USERNAME = System.getenv("DB_USERNAME");
-  private static final String PASSWORD = System.getenv("DB_PASSWORD");
+  private static final String URL = System.getenv("NEON_URL");
+  private static final String USERNAME = System.getenv("NEON_USERNAME");
+  private static final String PASSWORD = System.getenv("NEON_PASSWORD");
 
   public static Connection getConnection() throws SQLException {
     if (URL == null || USERNAME == null || PASSWORD == null) {
       throw new IllegalStateException(
-          "Database env vars not defined: DB_URL, DB_USERNAME, DB_PASSWORD");
+          "Database env vars not defined: NEON_URL, NEON_USERNAME, NEON_PASSWORD");
     }
     return DriverManager.getConnection(URL, USERNAME, PASSWORD);
   }
