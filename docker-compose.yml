@@ -28,6 +28,7 @@ services:
       DB_URL: postgresql://db:5432/cinema
       DB_USERNAME: cinema
       DB_PASSWORD: cinema
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-please-32chars-min}
     ports:
       - "8080:8080"
 
