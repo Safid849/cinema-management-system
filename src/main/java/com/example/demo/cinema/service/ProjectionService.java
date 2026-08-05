@@ -18,31 +18,31 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ProjectionService {
 
-    private final ProjectionRepository projectionRepository;
-    private final MovieRepository movieRepository;
-    private final RoomRepository roomRepository;
+  private final ProjectionRepository projectionRepository;
+  private final MovieRepository movieRepository;
+  private final RoomRepository roomRepository;
 
-    public List<ProjectionDTO> findAll() {
-        return projectionRepository.findAll().stream().map(ProjectionMapper::toDTO).toList();
-    }
+  public List<ProjectionDTO> findAll() {
+    return projectionRepository.findAll().stream().map(ProjectionMapper::toDTO).toList();
+  }
 
-    public ProjectionDTO create(ProjectionInputDTO input) {
-        Movie movie =
-                movieRepository
-                        .findById(input.movieId())
-                        .orElseThrow(() -> new NotFoundException("Movie " + input.movieId()));
-        Room room =
-                roomRepository
-                        .findById(input.roomId())
-                        .orElseThrow(() -> new NotFoundException("Room " + input.roomId()));
+  public ProjectionDTO create(ProjectionInputDTO input) {
+    Movie movie =
+        movieRepository
+            .findById(input.movieId())
+            .orElseThrow(() -> new NotFoundException("Movie " + input.movieId()));
+    Room room =
+        roomRepository
+            .findById(input.roomId())
+            .orElseThrow(() -> new NotFoundException("Room " + input.roomId()));
 
-        Projection projection =
-                Projection.builder()
-                        .movie(movie)
-                        .room(room)
-                        .datetime(input.datetime())
-                        .seatPrice(input.seatPrice())
-                        .build();
-        return ProjectionMapper.toDTO(projectionRepository.save(projection));
-    }
+    Projection projection =
+        Projection.builder()
+            .movie(movie)
+            .room(room)
+            .datetime(input.datetime())
+            .seatPrice(input.seatPrice())
+            .build();
+    return ProjectionMapper.toDTO(projectionRepository.save(projection));
+  }
 }

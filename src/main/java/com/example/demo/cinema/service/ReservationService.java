@@ -23,65 +23,64 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @AllArgsConstructor
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ProjectionRepository projectionRepository;
-    private final UserRepository userRepository;
-    private final SeatRepository seatRepository;
+  private final ReservationRepository reservationRepository;
+  private final ProjectionRepository projectionRepository;
+  private final UserRepository userRepository;
+  private final SeatRepository seatRepository;
 
-    public List<ReservationDTO> findAll() {
-        return reservationRepository.findAll().stream().map(ReservationMapper::toDTO).toList();
+  public List<ReservationDTO> findAll() {
+    return reservationRepository.findAll().stream().map(ReservationMapper::toDTO).toList();
+  }
+
+  public ReservationDTO findById(UUID id) {
+    return ReservationMapper.toDTO(getOrThrow(id));
+  }
+
+  public ReservationDTO create(ReservationInputDTO input) {
+    if (input.userId() == null) {
+      throw new BadRequestException("userId is required");
     }
+    User user =
+        userRepository
+            .findById(input.userId())
+            .orElseThrow(() -> new NotFoundException("User " + input.userId()));
+    Projection projection =
+        projectionRepository
+            .findById(input.projectionId())
+            .orElseThrow(() -> new NotFoundException("Projection " + input.projectionId()));
+    Set<Seat> seats = resolveSeats(input.seatIds());
 
-    public ReservationDTO findById(UUID id) {
-        return ReservationMapper.toDTO(getOrThrow(id));
+    Reservation reservation =
+        Reservation.builder()
+            .user(user)
+            .projection(projection)
+            .seats(seats)
+            .createdAt(Instant.now())
+            .build();
+    return ReservationMapper.toDTO(reservationRepository.save(reservation));
+  }
+
+  private Set<Seat> resolveSeats(Set<UUID> seatIds) {
+    if (seatIds == null || seatIds.isEmpty()) {
+      throw new BadRequestException("seatIds must not be empty");
     }
-
-    public ReservationDTO create(ReservationInputDTO input) {
-        if (input.userId() == null) {
-            throw new BadRequestException("userId is required");
-        }
-        User user =
-                userRepository
-                        .findById(input.userId())
-                        .orElseThrow(() -> new NotFoundException("User " + input.userId()));
-        Projection projection =
-                projectionRepository
-                        .findById(input.projectionId())
-                        .orElseThrow(() -> new NotFoundException("Projection " + input.projectionId()));
-        Set<Seat> seats = resolveSeats(input.seatIds());
-
-        Reservation reservation =
-                Reservation.builder()
-                        .user(user)
-                        .projection(projection)
-                        .seats(seats)
-                        .createdAt(Instant.now())
-                        .build();
-        return ReservationMapper.toDTO(reservationRepository.save(reservation));
+    Set<Seat> seats = new HashSet<>(seatRepository.findAllById(seatIds));
+    if (seats.size() != seatIds.size()) {
+      Set<UUID> foundIds = seats.stream().map(Seat::getId).collect(toSet());
+      Set<UUID> missing = new HashSet<>(seatIds);
+      missing.removeAll(foundIds);
+      throw new NotFoundException("Seat(s) not found: " + missing);
     }
+    return seats;
+  }
 
-    private Set<Seat> resolveSeats(Set<UUID> seatIds) {
-        if (seatIds == null || seatIds.isEmpty()) {
-            throw new BadRequestException("seatIds must not be empty");
-        }
-        Set<Seat> seats = new HashSet<>(seatRepository.findAllById(seatIds));
-        if (seats.size() != seatIds.size()) {
-            Set<UUID> foundIds = seats.stream().map(Seat::getId).collect(toSet());
-            Set<UUID> missing = new HashSet<>(seatIds);
-            missing.removeAll(foundIds);
-            throw new NotFoundException("Seat(s) not found: " + missing);
-        }
-        return seats;
-    }
-
-    private Reservation getOrThrow(UUID id) {
-        return reservationRepository
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException("Reservation " + id));
-    }
+  private Reservation getOrThrow(UUID id) {
+    return reservationRepository
+        .findById(id)
+        .orElseThrow(() -> new NotFoundException("Reservation " + id));
+  }
 }

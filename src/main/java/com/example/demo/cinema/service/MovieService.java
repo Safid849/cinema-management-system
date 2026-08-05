@@ -15,28 +15,28 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MovieService {
 
-    private final MovieRepository movieRepository;
+  private final MovieRepository movieRepository;
 
-    public List<MovieDTO> findAll() {
-        return movieRepository.findAll().stream().map(MovieMapper::toDTO).toList();
-    }
+  public List<MovieDTO> findAll() {
+    return movieRepository.findAll().stream().map(MovieMapper::toDTO).toList();
+  }
 
-    public MovieDTO findById(UUID id) {
-        return MovieMapper.toDTO(getOrThrow(id));
-    }
+  public MovieDTO findById(UUID id) {
+    return MovieMapper.toDTO(getOrThrow(id));
+  }
 
-    public MovieDTO create(MovieInputDTO input) {
-        Movie movie =
-                Movie.builder()
-                        .title(input.title())
-                        .genre(input.genre())
-                        .description(input.description())
-                        .duration(input.duration())
-                        .build();
-        return MovieMapper.toDTO(movieRepository.save(movie));
-    }
+  public MovieDTO create(MovieInputDTO input) {
+    Movie movie =
+        Movie.builder()
+            .title(input.title())
+            .genre(input.genre())
+            .description(input.description())
+            .duration(input.duration())
+            .build();
+    return MovieMapper.toDTO(movieRepository.save(movie));
+  }
 
-    private Movie getOrThrow(UUID id) {
-        return movieRepository.findById(id).orElseThrow(() -> new NotFoundException("Movie " + id));
-    }
+  private Movie getOrThrow(UUID id) {
+    return movieRepository.findById(id).orElseThrow(() -> new NotFoundException("Movie " + id));
+  }
 }
