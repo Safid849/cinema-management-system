@@ -19,51 +19,50 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtService {
 
-    static final String ROLE_CLAIM = "role";
+  static final String ROLE_CLAIM = "role";
 
-    private final SecretKey signingKey;
-    private final long expirationMs;
+  private final SecretKey signingKey;
+  private final long expirationMs;
 
-    public JwtService(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expiration-ms}") long expirationMs
-    ) {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+  public JwtService(
+      @Value("${jwt.secret}") String secret, @Value("${jwt.expiration-ms}") long expirationMs) {
+    byte[] keyBytes = Decoders.BASE64.decode(secret);
 
-        if (keyBytes.length < 32) {
-            throw new IllegalArgumentException("the jwt key decoded have to do at least 256 bits (32 octets).");
-        }
-
-        this.signingKey = Keys.hmacShaKeyFor(keyBytes);
-        this.expirationMs = expirationMs;
+    if (keyBytes.length < 32) {
+      throw new IllegalArgumentException(
+          "the jwt key decoded have to do at least 256 bits (32 octets).");
     }
 
-    public String generate(User user) {
-        Instant now = Instant.now();
-        return Jwts.builder()
-                .subject(user.getEmail())
-                .claim(ROLE_CLAIM, user.getRole().name())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusMillis(expirationMs)))
-                .signWith(signingKey, HS256)
-                .compact();
-    }
+    this.signingKey = Keys.hmacShaKeyFor(keyBytes);
+    this.expirationMs = expirationMs;
+  }
 
-    public String extractEmail(String token) {
-        return parseClaims(token).getSubject();
-    }
+  public String generate(User user) {
+    Instant now = Instant.now();
+    return Jwts.builder()
+        .subject(user.getEmail())
+        .claim(ROLE_CLAIM, user.getRole().name())
+        .issuedAt(Date.from(now))
+        .expiration(Date.from(now.plusMillis(expirationMs)))
+        .signWith(signingKey, HS256)
+        .compact();
+  }
 
-    public boolean isValid(String token) {
-        try {
-            parseClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.debug("invalid jwt : {}", e.getMessage());
-            return false;
-        }
-    }
+  public String extractEmail(String token) {
+    return parseClaims(token).getSubject();
+  }
 
-    private Claims parseClaims(String token) {
-        return Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload();
+  public boolean isValid(String token) {
+    try {
+      parseClaims(token);
+      return true;
+    } catch (JwtException | IllegalArgumentException e) {
+      log.debug("invalid jwt : {}", e.getMessage());
+      return false;
     }
+  }
+
+  private Claims parseClaims(String token) {
+    return Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload();
+  }
 }

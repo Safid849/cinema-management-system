@@ -7,11 +7,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public final class GrantedAuthorityFactory {
 
-    private static final String ROLE_PREFIX = "ROLE_";
+  private static final String ROLE_PREFIX = "ROLE_";
 
-    private GrantedAuthorityFactory() {}
+  private GrantedAuthorityFactory() {}
 
-    public static List<GrantedAuthority> fromRole(Userrole role) {
-        return List.of(new SimpleGrantedAuthority(ROLE_PREFIX + role.name()));
-    }
+  public static List<GrantedAuthority> fromRole(Userrole role) {
+    return List.of(new SimpleGrantedAuthority(ROLE_PREFIX + role.name()));
+  }
 }
