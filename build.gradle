@@ -46,16 +46,14 @@ jacocoTestCoverageVerification {
     dependsOn test
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "**/gen/**"
-            ])
+            fileTree(dir: it, include: ["**/cinema/**"], exclude: ["**/gen/**"])
         }))
     }
     violationRules {
         rule {
             limit {
                 counter = "LINE"
-                minimum = 0
+                minimum = 0.80
             }
         }
     }
@@ -69,9 +67,7 @@ jacocoTestReport {
     }
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "**/gen/**"
-            ])
+            fileTree(dir: it, include: ["**/cinema/**"], exclude: ["**/gen/**"])
         }))
     }
     doLast {
@@ -105,7 +101,9 @@ jacocoTestReport {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:3.2.2'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.2'
     testImplementation 'org.testcontainers:testcontainers:2.0.2'
+    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.2'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3'
 
@@ -140,6 +138,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.2'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.2'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
+    testImplementation 'org.springframework.security:spring-security-test'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
@@ -148,6 +147,4 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
     implementation 'org.flywaydb:flyway-core'
-
-    testImplementation 'org.springframework.security:spring-security-test'
 }
