@@ -61,24 +61,41 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth
-                    // --- routes publiques ---
+                    // --- public ---
                     .requestMatchers(HttpMethod.GET, "/ping")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/users/register", "/users/login")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/projections", "/projections/**")
                     .permitAll()
+                    // --- movies ---
                     .requestMatchers(HttpMethod.PUT, "/movies")
                     .hasRole(MANAGER)
                     .requestMatchers(HttpMethod.GET, "/movies", "/movies/**")
                     .authenticated()
+                    // --- projections ---
                     .requestMatchers(HttpMethod.PUT, "/projections")
                     .hasRole(MANAGER)
+                    // --- rooms & seats ---
+                    .requestMatchers(HttpMethod.PUT, "/rooms")
+                    .hasRole(MANAGER)
+                    .requestMatchers(HttpMethod.GET, "/rooms", "/rooms/**")
+                    .authenticated()
+                    // --- reservations ---
                     .requestMatchers(HttpMethod.GET, "/reservations")
                     .hasAnyRole(MANAGER, EMPLOYEE)
                     .requestMatchers(HttpMethod.PUT, "/reservations")
                     .hasAnyRole(MANAGER, EMPLOYEE)
+                    .requestMatchers(HttpMethod.DELETE, "/reservations/**")
+                    .hasAnyRole(MANAGER, EMPLOYEE)
                     .requestMatchers(HttpMethod.GET, "/reservations/**")
+                    .authenticated()
+                    // --- users ---
+                    .requestMatchers(HttpMethod.PUT, "/users/*/role")
+                    .hasRole(MANAGER)
+                    .requestMatchers(HttpMethod.GET, "/users")
+                    .hasAnyRole(MANAGER, EMPLOYEE)
+                    .requestMatchers(HttpMethod.GET, "/users/**")
                     .authenticated()
                     .anyRequest()
                     .authenticated())
