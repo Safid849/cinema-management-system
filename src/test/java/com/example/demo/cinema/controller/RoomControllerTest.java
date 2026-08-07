@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.demo.cinema.dto.RoomDTO;
 import com.example.demo.cinema.dto.RoomInputDTO;
+import com.example.demo.cinema.security.CinemaUserDetailsService;
+import com.example.demo.cinema.security.JwtService;
 import com.example.demo.cinema.service.RoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -31,6 +33,8 @@ class RoomControllerTest {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
   @MockBean private RoomService roomService;
+  @MockBean private JwtService jwtService;
+  @MockBean private CinemaUserDetailsService cinemaUserDetailsService;
 
   private static final UUID ROOM_ID = UUID.randomUUID();
 

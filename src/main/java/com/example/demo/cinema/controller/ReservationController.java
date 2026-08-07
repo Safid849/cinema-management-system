@@ -33,7 +33,6 @@ public class ReservationController {
     return reservationService.findAll();
   }
 
-  /** A client's own reservations, so they have something to read without hitting /reservations. */
   @GetMapping("/reservations/me")
   public List<ReservationDTO> myReservations(@AuthenticationPrincipal CinemaUserPrincipal caller) {
     if (caller == null) {

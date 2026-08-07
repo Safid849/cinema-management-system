@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.cinema.dto.SeatDTO;
+import com.example.demo.cinema.security.CinemaUserDetailsService;
+import com.example.demo.cinema.security.JwtService;
 import com.example.demo.cinema.service.SeatService;
 import java.util.List;
 import java.util.UUID;
@@ -16,16 +18,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * No @PreAuthorize on this controller: every authenticated role can list seats. @WithMockUser only
- * satisfies @WebMvcTest's deny-unauthenticated default; the real JWT filter is exercised by the
- * integration tests.
- */
 @WebMvcTest(SeatController.class)
 class SeatControllerTest {
 
   @Autowired private MockMvc mockMvc;
   @MockBean private SeatService seatService;
+  @MockBean private JwtService jwtService;
+  @MockBean private CinemaUserDetailsService cinemaUserDetailsService;
 
   private static final UUID ROOM_ID = UUID.randomUUID();
 

@@ -32,7 +32,6 @@ public class MovieService {
     return MovieMapper.toDTO(getOrThrow(id));
   }
 
-  /** PUT semantics: create when the payload carries no id, update the named movie otherwise. */
   @Transactional
   public MovieDTO upsert(MovieInputDTO input) {
     requirePositiveDuration(input.duration());

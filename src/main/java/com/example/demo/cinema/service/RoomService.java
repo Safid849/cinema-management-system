@@ -30,11 +30,6 @@ public class RoomService {
     return RoomMapper.toDTO(getOrThrow(id));
   }
 
-  /**
-   * Idempotent on the room number, which is unique across the cinema. Seats are created with the
-   * room (composition in the model) so a room is never an empty shell; growing the capacity adds
-   * the missing seats, shrinking it never deletes seats that may already be sold.
-   */
   @Transactional
   public RoomDTO upsert(RoomInputDTO input) {
     if (input.capacity() <= 0) {

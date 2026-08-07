@@ -17,10 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/**
- * Issues and reads the HS256 tokens the API authenticates with. The subject carries the email, and
- * two extra claims carry the role and the user id so the filter never has to guess.
- */
 @Slf4j
 @Component
 public class JwtService {

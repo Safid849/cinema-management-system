@@ -31,7 +31,6 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
 
-  /** Public sign-up: always a CLIENT. Roles are only granted afterwards by a MANAGER. */
   @Transactional
   public UserResponseDTO register(UserCreateDTO input) {
     String email = normalise(input.email());

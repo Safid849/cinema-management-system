@@ -22,7 +22,6 @@ public final class CinemaUserPrincipal implements UserDetails {
     this.role = role;
   }
 
-  /** Mapper: turns the persistence entity into the security principal. */
   public static CinemaUserPrincipal from(User user) {
     return new CinemaUserPrincipal(
         user.getId(), user.getEmail(), user.getPassword(), user.getRole());
