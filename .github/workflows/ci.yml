@@ -16,10 +16,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     env:
       AWS_REGION: eu-west-3
+      
 
     steps:
       - uses: actions/checkout@v4.1.6
@@ -28,28 +29,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
-          cache: 'gradle'
-
       - run: chmod +x gradlew
       - run: chmod +x .shell/publish_gen_to_maven_local.sh
+      - run: |
+          ./gradlew test
 
-      # Integration tests spin up a throwaway PostgreSQL through Testcontainers,
-      # which needs the Docker daemon the runner already provides.
-      - name: Unit and integration tests
-        run: ./gradlew test
-
-      # `test` is finalizedBy the verification task, but naming it here makes the
-      # 80% line-coverage gate explicit and gives its failure its own CI line.
-      - name: Coverage gate (>= 80% lines on cinema/**)
-        run: ./gradlew jacocoTestCoverageVerification jacocoTestReport
-
-      - name: Publish coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-report
-          path: build/reports/jacoco/test/html
-          if-no-files-found: ignore
+      
 
   format:
     runs-on: ubuntu-latest
