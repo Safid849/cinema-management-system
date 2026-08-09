@@ -1,8 +1,6 @@
-# --- Build stage ---
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
-# Cache dependencies separately from source for faster rebuilds
 COPY gradlew settings.gradle build.gradle ./
 COPY gradle ./gradle
 RUN chmod +x gradlew
