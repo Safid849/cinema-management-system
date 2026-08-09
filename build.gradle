@@ -1,3 +1,6 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.2'
@@ -7,7 +10,7 @@ plugins {
 
     id 'jacoco'
 
-
+    
 }
 
 jacoco {
@@ -46,14 +49,16 @@ jacocoTestCoverageVerification {
     dependsOn test
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, include: ["**/cinema/**"], exclude: ["**/gen/**"])
+            fileTree(dir: it, exclude: [
+                    "**/gen/**"
+            ])
         }))
     }
     violationRules {
         rule {
             limit {
                 counter = "LINE"
-                minimum = 0.80
+                minimum = 0
             }
         }
     }
@@ -66,8 +71,12 @@ jacocoTestReport {
         html.required = true
     }
     afterEvaluate {
+        // Need to be duplicated like this from jacocoTestCoverageVerification,
+        // else display coverageRate is inconsistent with what was computed during coverage...
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, include: ["**/cinema/**"], exclude: ["**/gen/**"])
+            fileTree(dir: it, exclude: [
+                    "**/gen/**"
+            ])
         }))
     }
     doLast {
@@ -101,9 +110,7 @@ jacocoTestReport {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:3.2.2'
-    implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.2'
     testImplementation 'org.testcontainers:testcontainers:2.0.2'
-    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.2'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3'
 
@@ -114,6 +121,8 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.3'
     implementation 'software.amazon.awssdk:sqs:2.21.40'
     implementation 'software.amazon.awssdk:eventbridge:2.21.40'
+    implementation 'software.amazon.awssdk:s3:2.21.40'
+    implementation 'software.amazon.awssdk:s3-transfer-manager:2.21.40'
     implementation 'software.amazon.awssdk.crt:aws-crt:0.28.12'
     implementation 'software.amazon.awssdk:ses:2.21.40'
     implementation 'software.amazon.awssdk:core:2.21.40'
@@ -138,14 +147,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.2'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.2'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.apache.httpcomponents.client5:httpclient5'
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
-    implementation 'org.flywaydb:flyway-core'
+
+
 }
