@@ -79,6 +79,70 @@ paths:
           $ref: './openapi.yml#/components/responses/429'
         '500':
           $ref: './openapi.yml#/components/responses/500'
+    delete:
+      tags: [Reservations]
+      operationId: deleteReservation
+      description: 403 for CLIENT, 200 for EMPLOYEE and MANAGER.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Reservation deleted
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
+
+  /reservations/{id}/download:
+    get:
+      tags: [Reservations]
+      operationId: downloadReservation
+      description: >
+        Generates a PDF ticket for the reservation and returns it directly in the response body.
+        Same access rule as GET /reservations/{id}: 200 if the CLIENT owns the reservation,
+        403 if it is another CLIENT's reservation, 200 for MANAGER and EMPLOYEE regardless
+        of the owner.
+        The PDF is also archived to S3 as a side effect, best-effort: if the archival upload
+        fails, the response still returns 200 with the PDF — archival failure is logged
+        server-side but never surfaces as an error to the caller.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: PDF ticket for the reservation
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: './openapi.yml#/components/responses/401'
+        '403':
+          $ref: './openapi.yml#/components/responses/403'
+        '404':
+          $ref: './openapi.yml#/components/responses/404'
+        '429':
+          $ref: './openapi.yml#/components/responses/429'
+        '500':
+          $ref: './openapi.yml#/components/responses/500'
 
 components:
   schemas:
